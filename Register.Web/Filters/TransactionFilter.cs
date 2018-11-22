@@ -4,13 +4,13 @@ using System.Data.Common;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Efc.Transaction.Api.Filters
+namespace Register.Web.Filters
 {
-    public class UnitOfWorkFilter : IAsyncActionFilter
+    public class TransactionFilter : IAsyncActionFilter
     {
         private readonly DbTransaction transaction;
 
-        public UnitOfWorkFilter(DbTransaction transaction)
+        public TransactionFilter(DbTransaction transaction)
         {
             this.transaction = transaction;
         }

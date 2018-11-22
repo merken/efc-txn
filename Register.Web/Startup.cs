@@ -10,14 +10,17 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Register.Web.Services;
 
-namespace Efc.Transaction.Api
+namespace Register.Web
 {
     public class Startup
     {
+        private string connectionString;
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            connectionString = configuration.GetConnectionString("RegisterDb");
         }
 
         public IConfiguration Configuration { get; }
@@ -27,12 +30,13 @@ namespace Efc.Transaction.Api
         {
             services
                 .AddMvc()
-                .AddControllersAsServices()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            var connectionString = Configuration.GetConnectionString("AdventureWorksDW");
-            services.UseSqlServer(connectionString);
-            services.UseOneTransactionPerHttpCall();
+            services.UseAllOfType<IRegisterService>();
+
+            services
+                .UseRegisterDbContext(connectionString)
+                .UseOneTransactionPerHttpCall();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
