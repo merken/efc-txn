@@ -71,7 +71,7 @@ namespace Register.Web
             return serviceCollection;
         }
 
-        public static IServiceCollection UseOneTransactionPerHttpCall(this IServiceCollection serviceCollection, IsolationLevel level = IsolationLevel.ReadUncommitted)
+        public static IServiceCollection UseOneTransactionPerHttpCall(this IServiceCollection serviceCollection)
         {
             //Manage the transaction at level of HTTP request/response
             //This is done for every request/response
