@@ -58,7 +58,7 @@ namespace Register.Web
             });
 
             //Finally, create the DbContext, using the transaction
-            //This is done for every time a DbContext is requested (could be more than once per request/response)
+            //This is done for every request/response
             serviceCollection.AddScoped<RegisterDbContext>((serviceProvider) =>
             {
                 var transaction = serviceProvider.GetService<DbTransaction>();
