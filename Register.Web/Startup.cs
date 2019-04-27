@@ -36,12 +36,15 @@ namespace Register.Web
 
             services
                 .UseRegisterDbContext(connectionString)
-                .UseOneTransactionPerHttpCall();
+                .UseOneTransactionPerHttpCall()
+                .UseMigrations(connectionString);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            var logger = loggerFactory.CreateLogger("App startup");
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -53,6 +56,7 @@ namespace Register.Web
 
             app.UseHttpsRedirection();
             app.UseMvc();
+            app.MigrateDatabaseUponAppStart(logger);
         }
     }
 }

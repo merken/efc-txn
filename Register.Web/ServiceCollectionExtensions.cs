@@ -1,10 +1,13 @@
+using System;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Reflection;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Register.Data.Model;
 using Register.Web.Filters;
 
@@ -84,6 +87,39 @@ namespace Register.Web
                 });
 
             return serviceCollection;
+        }
+
+        public static IServiceCollection UseMigrations(this IServiceCollection serviceCollection, string connectionString)
+        {
+            serviceCollection.AddScoped<IMigrationContext>((serviceProvider) =>
+            {
+                var ctxOptions = new DbContextOptionsBuilder<RegisterDbContext>()
+                    .UseSqlServer(connectionString)
+                    .Options;
+
+                var context = new RegisterDbContext(ctxOptions);
+                return context;
+            });
+
+            return serviceCollection;
+        }
+
+        public static IApplicationBuilder MigrateDatabaseUponAppStart(this IApplicationBuilder app, ILogger logger)
+        {
+            logger.LogTrace("MigrateDatabaseUponAppStart");
+
+            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            {
+                var migrationContext = serviceScope.ServiceProvider.GetRequiredService<IMigrationContext>();
+                var applicationDbContext = migrationContext as RegisterDbContext; //This will always be correct, since we registered it in the method above
+                var applicationDb = applicationDbContext.Database;
+                applicationDb.SetCommandTimeout(TimeSpan.FromMinutes(5));
+                applicationDb.Migrate();
+            }
+
+            logger.LogTrace("MigrateDatabaseUponAppStart suceeded");
+
+            return app;
         }
     }
 }

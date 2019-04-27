@@ -2,7 +2,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Register.Data.Model
 {
-    public class RegisterDbContext : DbContext
+    public interface IMigrationContext
+    {
+        //This is used when applying migrations
+    }
+
+    public class RegisterDbContext : DbContext, IMigrationContext
     {
         public virtual DbSet<Member> Members { get; set; }
         public virtual DbSet<Shipment> Shipments { get; set; }
